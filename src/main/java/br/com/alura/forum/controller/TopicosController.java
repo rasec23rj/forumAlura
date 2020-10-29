@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,9 +59,9 @@ public class TopicosController {
 	/* paginação */
 	@GetMapping("/paginacao")
 	public Page<TopicoDto> paginacao(@RequestParam(required = false) String nomeCurso,
-			@RequestParam int pagina, @RequestParam int qtd) {
+			@RequestParam int pagina, @RequestParam int qtd, @RequestParam String order) {
 		
-		Pageable paginacao = PageRequest.of(pagina, qtd);
+		Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, order);
 		
 		if (nomeCurso == null) {
 			Page<Topico> topicos = topicoRepository.findAll(paginacao);
@@ -70,7 +72,21 @@ public class TopicosController {
 		}
 	}
 
-	
+	/* paginação flexivel*/
+	@GetMapping("/paginacao2")
+	public Page<TopicoDto> paginacao2(@RequestParam(required = false) String nomeCurso,
+			@PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable paginacao) {
+		
+				
+		if (nomeCurso == null) {
+			Page<Topico> topicos = topicoRepository.findAll(paginacao);
+			return TopicoDto.converterPaginacao(topicos);
+		} else {
+			Page<Topico> topicos = topicoRepository.paginacaoPorNomeDoCurso(nomeCurso, paginacao);
+			return TopicoDto.converterPaginacao(topicos);
+		}
+	}
+
 
 	@PostMapping
 	@Transactional
