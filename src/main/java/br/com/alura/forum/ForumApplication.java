@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class ForumApplication {
 
 	public static void main(String[] args) {
-		System.out.println("BCryptPasswordEncoder: " + new BCryptPasswordEncoder().encode("123456"));
 		SpringApplication.run(ForumApplication.class, args);
 		
 	}
